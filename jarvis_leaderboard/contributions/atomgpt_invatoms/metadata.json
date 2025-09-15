@@ -2,8 +2,8 @@
     "model_name": "AtomGPT",
     "project_url": "https://arxiv.org/abs/2405.03680",
     "date_submitted": "05-23-2024",
-    "author_email": "knc6@nist.gov",
-    "database_version": "12-12-2022",
+    "author_email": "crc00042@gmail.com",
+    "database_version": "08-08-2025",
     "team_name": "AtomGPT",
     "time_taken_seconds": {
         "AI-SinglePropertyClass-mbj_bandgap-dft_3d-test-acc.csv.zip": "",
@@ -15,6 +15,6 @@
     "software_used": "jarvis-tools,numpy,scipy,torch,atomgpt",
     "hardware_used": "nisaba-cluster at NIST, V100 Tesla GPU",
     "git_url": [
-        "https://github.com/usnistgov/atomgpt"
+        "https://github.com/atomgptlab/atomgpt"
     ]
 }

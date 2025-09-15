@@ -321,8 +321,9 @@ def get_metric_value(
         errors.append([csv_path, len(csv_data), len(actual_df)])
 
     df = pd.merge(csv_data, actual_df, on="id")
-    # print('csv',csv_path)
-    # print ('df',df)
+    print('csv',csv_path)
+    print ('df',df)
+    print ('actual_df',actual_df)
     # print('csv_data',csv_data)
     # print('actual_df',actual_df)
     results["res"] = "na"
@@ -461,35 +462,26 @@ def get_metric_value(
         results["res"] = round(scores, 4)
         print("rouge scores", scores)
     if metric == "rmse" and subcat == "AtomGen":
-        print("AtomGen")
-        from pymatgen.analysis.structure_matcher import StructureMatcher
-
-        matcher = StructureMatcher(stol=0.5, angle_tol=10, ltol=0.3)
+        print("AtomGen",df)
         rms = []
         for m, mm in df.iterrows():
-            try:
                 atoms_target = (
                     Poscar.from_string(
                         (mm["actual"].replace("\\n", "\n"))
                     ).atoms
-                ).pymatgen_converter()
+                )
                 atoms_pred = (
                     Poscar.from_string(
                         (mm["prediction"].replace("\\n", "\n"))
                     ).atoms
-                ).pymatgen_converter()
+                )
+                print("atoms_target",atoms_target)
+                print("atoms_pred",atoms_pred)
                 # rms_dist = matcher.get_rms_dist(atoms_pred,atoms_target)
-                rms_dist = matcher.get_rms_anonymous(atoms_pred, atoms_target)
-                if rms_dist[0] is not None:
-                    rms.append(rms_dist[0])
-            except Exception as exp:
-                print("exp", exp)
-                pass
-        try:
-            rms = round(np.array(rms).mean(), 4)
-        except:
-            rms = -9999
-            pass
+                rms_dist = np.abs(atoms_target.volume-atoms_pred.volume) #matcher.get_rms_anonymous(atoms_pred, atoms_target)
+                #if rms_dist[0] is not None:
+                rms.append(rms_dist)
+        rms = round(np.array(rms).mean(), 4)
         results["res"] = rms
         # import sys
         # sys.exit()
@@ -901,12 +893,14 @@ def get_metric_value_old(
 def rebuild_pages(
     exclude_benchs=["AI-AtomGen-heat_ref-perov5-test-rmse.csv.zip"],
     debug_one=False,
+    
 ):
     print("Rebuilding web:")
     unique_fname = []
     os.chdir(root_dir + "/..")
     num_data = 0
     for i in glob.glob("jarvis_leaderboard/contributions/*/*.csv.zip"):
+      if 'AtomGen' in i:
         bnch_tmp = i.split("/")[-1]
         if bnch_tmp not in exclude_benchs:
             # for i in glob.glob("jarvis_leaderboard/benchmarks/*/*.csv.zip"):
@@ -969,6 +963,7 @@ def rebuild_pages(
     dat = []
     md_files = []
     for i in glob.glob("jarvis_leaderboard/contributions/*/*.csv.zip"):
+      if 'AtomGen' in i:
         bnch_tmp = i.split("/")[-1]
         if bnch_tmp not in exclude_benchs:
             # for i in glob.glob("jarvis_leaderboard/benchmarks/*/*.csv.zip"):
